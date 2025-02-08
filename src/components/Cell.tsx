@@ -69,7 +69,7 @@ export const Cell = (props: {id: number}) => {
 
     return (
         <>
-            <div onClick={turnCard} id={`cell-${props.id}`} className={`p-4 rounded-xl ${bgColor ? bgColor : "bg-gray-300"}`}></div>
+            <div onClick={turnCard} className={`p-4 rounded-xl ${bgColor ? bgColor : "bg-gray-300"}`}></div>
         </>
     );
 };
