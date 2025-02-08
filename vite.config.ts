@@ -8,4 +8,5 @@ export default defineConfig({
       react(),
       tailwindcss(),
   ],
+  base: "https://coolrunner1.github.io/crimeadigital-project-2/",
 })
