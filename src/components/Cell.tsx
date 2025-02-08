@@ -1,7 +1,27 @@
 import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../state/store.ts";
+import {setSelectedCards} from "../slices/cardsSlice.ts";
 
 export const Cell = (props: {id: number}) => {
     const [bgColor, setBgColor] = useState<string>();
+    const selectedCards = useSelector((state: RootState) => state.cards.selectedCards);
+    const dispatch = useDispatch();
+
+    const turnCard = async () => {
+        if (bgColor !== "") {
+            return;
+        }
+        if (selectedCards.length > 1) {
+            return;
+        }
+        colorDistribution();
+        if (selectedCards.length === 1) {
+            setTimeout(() => dispatch(setSelectedCards([])), 1000);
+        }
+        dispatch(setSelectedCards([...selectedCards, props.id]));
+
+    }
 
     const colorDistribution = () => {
         switch (Math.floor(props.id/2)){
@@ -33,12 +53,23 @@ export const Cell = (props: {id: number}) => {
     }
 
     useEffect(() => {
+        if (selectedCards.length === 2
+            && Math.floor(props.id / 2) === Math.floor(selectedCards[0] / 2)
+            && Math.floor(props.id / 2) === Math.floor(selectedCards[1] / 2)
+            && bgColor !== "") {
+            setTimeout(() => setBgColor("bg-blue-500"), 1000);
+        }
+    }, [selectedCards]);
 
-    }, [props.id]);
+    useEffect(() => {
+        if (selectedCards.length === 0 && bgColor !== "bg-blue-500") {
+            setBgColor("");
+        }
+    }, [selectedCards, bgColor]);
 
     return (
         <>
-            <div onClick={colorDistribution} id={`cell-${props.id}`} className={`p-4 rounded-xl ${bgColor ? bgColor : "bg-gray-300"}`}></div>
+            <div onClick={turnCard} id={`cell-${props.id}`} className={`p-4 rounded-xl ${bgColor ? bgColor : "bg-gray-300"}`}></div>
         </>
     );
 };
