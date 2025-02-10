@@ -12,9 +12,12 @@ const cardsSlice = createSlice({
         },
         setNumberOfRemovedCards: (state, action) => {
             state.numberOfRemovedCards = action.payload;
+        },
+        incrementNumberOfRemovedCards: (state) => {
+            state.numberOfRemovedCards++;
         }
     }
 });
 
-export const {setSelectedCards, setNumberOfRemovedCards} = cardsSlice.actions;
+export const {setSelectedCards, setNumberOfRemovedCards, incrementNumberOfRemovedCards} = cardsSlice.actions;
 export default cardsSlice.reducer;

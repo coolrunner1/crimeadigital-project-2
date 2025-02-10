@@ -1,13 +1,12 @@
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../state/store.ts";
-import {setNumberOfRemovedCards, setSelectedCards} from "../slices/cardsSlice.ts";
+import {incrementNumberOfRemovedCards, setSelectedCards} from "../slices/cardsSlice.ts";
 
 export const Cell = (props: {id: number}) => {
     const [bgColor, setBgColor] = useState<string>();
 
     const selectedCards = useSelector((state: RootState) => state.cards.selectedCards);
-    const numberOfRemovedCards = useSelector((state: RootState) => state.cards.numberOfRemovedCards);
 
     const dispatch = useDispatch();
 
@@ -62,7 +61,7 @@ export const Cell = (props: {id: number}) => {
             && bgColor !== "") {
             setTimeout(() => {
                 setBgColor("bg-blue-500");
-                dispatch(setNumberOfRemovedCards(numberOfRemovedCards+2));
+                dispatch(incrementNumberOfRemovedCards());
             }, 1000);
         }
     }, [selectedCards]);
