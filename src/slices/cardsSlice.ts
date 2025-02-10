@@ -4,13 +4,17 @@ const cardsSlice = createSlice({
     name: "cards",
     initialState: {
         selectedCards: [],
+        numberOfRemovedCards: 0,
     },
     reducers: {
         setSelectedCards: (state, action) => {
-            state.selectedCards = action.payload
+            state.selectedCards = action.payload;
+        },
+        setNumberOfRemovedCards: (state, action) => {
+            state.numberOfRemovedCards = action.payload;
         }
     }
 });
 
-export const {setSelectedCards} = cardsSlice.actions;
+export const {setSelectedCards, setNumberOfRemovedCards} = cardsSlice.actions;
 export default cardsSlice.reducer;

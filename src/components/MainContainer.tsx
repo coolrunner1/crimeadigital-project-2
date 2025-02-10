@@ -1,16 +1,17 @@
 import {Cell} from "./Cell.tsx";
 import {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../state/store.ts";
+import {setNumberOfRemovedCards} from "../slices/cardsSlice.ts";
 
 export const MainContainer = () => {
     const [array, setArray] = useState<number[]>([]);
-    const [round, setRound] = useState(0);
-    const [render, setRender] = useState(true);
+    const [round, setRound] = useState<number>(0);
+    const [render, setRender] = useState<boolean>(true);
 
-    const [numberOfCards, setNumberOfCards] = useState(16);
+    const dispatch = useDispatch();
 
-    const selectedCards = useSelector((state: RootState) => state.cards.selectedCards);
+    const numberOfRemovedCards = useSelector((state: RootState) => state.cards.numberOfRemovedCards);
 
     const shuffle = () => {
         const array = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
@@ -24,28 +25,21 @@ export const MainContainer = () => {
             [array[currentIndex], array[randomIndex]] = [
                 array[randomIndex], array[currentIndex]];
         }
-        setNumberOfCards(16);
+        dispatch(setNumberOfRemovedCards(0));
         setRound(round+1)
         return array;
     }
 
     useEffect(() => {
-        if (selectedCards.length < 2) {
-            return;
+        if (numberOfRemovedCards >= 16) {
+            setRender(false);
+            setTimeout(() => {
+                setArray([]);
+                setArray(shuffle());
+                setRender(true)
+            }, 1500)
         }
-        if (Math.floor(selectedCards[0] / 2) === Math.floor(selectedCards[1] / 2)) {
-            if (numberOfCards-2 === 0) {
-                setRender(false);
-                setTimeout(() => {
-                    setArray([]);
-                    setArray(shuffle());
-                    setRender(true)
-                }, 1500)
-                return;
-            }
-            setNumberOfCards(numberOfCards-2);
-        }
-    }, [selectedCards]);
+    }, [numberOfRemovedCards]);
 
     useEffect(() => {
         setArray(shuffle());
