@@ -73,8 +73,6 @@ export const Cell = (props: {id: number}) => {
     }, [selectedCards, bgColor]);
 
     return (
-        <>
-            <div onClick={turnCard} className={`p-4 rounded-xl ${bgColor ? bgColor : "bg-gray-300"}`}></div>
-        </>
+        <div onClick={turnCard} className={`p-4 rounded-xl ${bgColor ? bgColor : "bg-gray-300"}`}></div>
     );
 };

@@ -34,7 +34,6 @@ export const MainContainer = () => {
         if (numberOfRemovedCards >= 16) {
             setRender(false);
             setTimeout(() => {
-                setArray([]);
                 setArray(shuffle());
                 setRender(true)
             }, 1500)
@@ -46,17 +45,15 @@ export const MainContainer = () => {
     }, [])
 
     return (
-        <>
-            <div className="h-screen w-screen [@media(max-height:400px)]:h-full bg-white dark:bg-gray-800 flex flex-col items-center justify-center">
-                <div className="m-auto w-full md:min-h-[400px] md:max-w-[600px] xl:max-w-[700px] h-full md:h-[70%] pt-5 sm:p-10 bg-blue-500 text-center gap-3 text-white md:rounded-2xl shadow-2xl">
-                    <h1 className="text-2xl font-bold">Find a Couple</h1>
-                    <div className="text-xl font-light">Round {round}</div>
-                    {!render && <span className="text-xl font-light">You won!</span>}
-                    <div className="grid grid-cols-4 grid-rows-4 gap-6 h-[80%] lg:w-[70%] lg:mx-auto mt-5 mx-3 sm:m-10 [@media(max-height:400px)]:h-[400px] ">
-                        {render && array.map((item, key) => (<Cell key={key} id={item} />))}
-                    </div>
+        <div className="h-screen w-screen [@media(max-height:400px)]:h-full bg-white dark:bg-gray-800 flex flex-col items-center justify-center">
+            <div className="m-auto w-full md:min-h-[400px] md:max-w-[600px] xl:max-w-[700px] h-full md:h-[70%] pt-5 sm:p-10 bg-blue-500 text-center gap-3 text-white md:rounded-2xl shadow-2xl">
+                <h1 className="text-2xl font-bold">Find a Couple</h1>
+                <div className="text-xl font-light">Round {round}</div>
+                {!render && <span className="text-xl font-light">You won!</span>}
+                <div className="grid grid-cols-4 grid-rows-4 gap-6 h-[80%] lg:w-[70%] lg:mx-auto mt-5 mx-3 sm:m-10 [@media(max-height:400px)]:h-[400px] ">
+                    {render && array.map((item, key) => (<Cell key={key} id={item} />))}
                 </div>
             </div>
-        </>
+        </div>
     );
 };
