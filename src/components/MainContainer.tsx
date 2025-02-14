@@ -30,11 +30,6 @@ export const MainContainer = () => {
         const colorArray: {key: number, value: string}[] = [];
         const numberOfCells = grid * grid;
 
-        if (numberOfCells % 2 !== 0 || numberOfCells < 1 ) {
-            console.error("Invalid number of cells");
-            return [];
-        }
-
         for (let i = 0; i < numberOfCells; i+=2) {
             const randomColor = "#"+Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
             colorArray.push({key: i, value: randomColor});
