@@ -95,8 +95,7 @@ export const MainContainer = () => {
         if (greatestRound === null || parseInt(greatestRound) < round) {
             localStorage.setItem("greatestRound", round.toString());
             return round;
-        }
-        if (parseInt(greatestRound) >= round) {
+        } else {
             return greatestRound;
         }
     };
