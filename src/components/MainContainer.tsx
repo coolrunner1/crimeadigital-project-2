@@ -8,10 +8,10 @@ import {WinScreen} from "./WinScreen.tsx";
 
 export const MainContainer = () => {
     const [array, setArray] = useState<{key: number, value: string}[]>([]);
-    const [round, setRound] = useState<number>(-1);
+    const [round, setRound] = useState<number>(0);
     const [render, setRender] = useState<boolean>(true);
     const [mode, setMode] = useState<string>("");
-    const [gridSize, setGridSize] = useState<number>(4);
+    const [gridSize, setGridSize] = useState<number>(2);
     const [completed, setCompleted] = useState<boolean>(false);
 
 
@@ -19,8 +19,16 @@ export const MainContainer = () => {
 
     const numberOfRemovedCards = useSelector((state: RootState) => state.cards.numberOfRemovedCards);
 
-    const shuffle = (grid: number) => {
+    const emulateBackground = () => {
+        const colorArray: {key: number, value: string}[] = [];
+        for (let i = 0; i < 4; i++) {
+            colorArray.push({key: i, value: "f"});
+        }
+        setRender(true);
+        return colorArray;
+    }
 
+    const shuffle = (grid: number) => {
         if (grid < 2 || grid >8 || grid % 2 !== 0) {
             console.error("Invalid grid size. Grid size must be either 2, 4 or 6. Using default value of 4.");
             setGridSize(4);
@@ -48,7 +56,7 @@ export const MainContainer = () => {
         dispatch(setNumberOfRemovedCards(0));
         setRound(round+1)
         return colorArray;
-    }
+    };
 
     const setDifficulty = () => {
         if (mode === "") {
@@ -98,7 +106,7 @@ export const MainContainer = () => {
             setRender(false);
             setTimeout(() => {
                 setDifficulty();
-                setRender(true)
+                setRender(true);
             }, 1500)
         }
     }, [numberOfRemovedCards]);
@@ -108,7 +116,9 @@ export const MainContainer = () => {
     }, [mode]);
 
     useEffect(() => {
-        setArray(shuffle(4));
+        if (array.length === 0) {
+            setArray(emulateBackground);
+        }
     }, []);
 
     return (
@@ -128,8 +138,7 @@ export const MainContainer = () => {
                         <div className="text-base font-light">Longest streak: {getLongestStreak()} rounds</div>}
                     {!render && <span className="text-xl font-light">You won!</span>}
                     <div className={`${gridSize == 2 ? 'grid-small' : gridSize == 4 ? 'grid-medium' : gridSize == 6 ? 'grid-large' : 'grid-extra-large'}
-                            ${gridSize >= 6 ? 'gap-2' : 'gap-6'} h-[80%] lg:w-[70%] lg:mx-auto mt-2 mx-3 sm:m-8
-                            [@media(max-height:400px)]:h-[400px]`}
+                            ${gridSize >= 6 ? 'gap-2' : 'gap-6'} h-[80%] lg:w-[70%] lg:mx-auto mt-2 mx-3 [@media(max-height:400px)]:h-[400px]`}
                     >
                         {render && array.map((item, key) => (<Cell key={key} id={item.key} color={item.value} />))}
                     </div>
