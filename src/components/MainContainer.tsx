@@ -13,6 +13,7 @@ export const MainContainer = () => {
     const [mode, setMode] = useState<string>("");
     const [gridSize, setGridSize] = useState<number>(2);
     const [completed, setCompleted] = useState<boolean>(false);
+    const [longestStreak, setLongestStreak] = useState<number>(0);
 
 
     const dispatch = useDispatch();
@@ -90,15 +91,23 @@ export const MainContainer = () => {
         }
     };
 
-    const getLongestStreak = () => {
+    const getLongestStreak = (): number => {
         const greatestRound = localStorage.getItem("greatestRound");
         if (greatestRound === null || parseInt(greatestRound) < round) {
             localStorage.setItem("greatestRound", round.toString());
             return round;
         } else {
-            return greatestRound;
+            return parseInt(greatestRound);
         }
     };
+
+    useEffect(() => {
+        if (mode !== "casual") {
+            return;
+        }
+
+        setLongestStreak(getLongestStreak())
+    }, [round]);
 
     useEffect(() => {
         if (numberOfRemovedCards >= array.length) {
@@ -134,7 +143,7 @@ export const MainContainer = () => {
                     <h1 className="text-2xl font-bold">Find a Couple</h1>
                     <div className="text-xl font-light">Round {round}</div>
                     {mode === "casual" &&
-                        <div className="text-base font-light">Longest streak: {getLongestStreak()} rounds</div>}
+                        <div className="text-base font-light">Longest streak: {longestStreak} rounds</div>}
                     {!render && <span className="text-xl font-light">You won!</span>}
                     <div className={`${gridSize == 2 ? 'grid-small' : gridSize == 4 ? 'grid-medium' : gridSize == 6 ? 'grid-large' : 'grid-extra-large'}
                             ${gridSize >= 6 ? 'gap-2' : 'gap-6'} h-[80%] lg:w-[70%] lg:mx-auto mt-2 mx-3 [@media(max-height:400px)]:h-[400px]`}
