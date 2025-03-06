@@ -73,19 +73,15 @@ export const MainContainer = () => {
         if (round === 0) {
             setGridSize(2);
             setArray(shuffle(2));
-            return;
         } else if (round === 1) {
             setGridSize(4);
             setArray(shuffle(4));
-            return;
         } else if (round === 2) {
             setGridSize(6);
             setArray(shuffle(6));
-            return;
         } else if (round === 3) {
             setGridSize(8);
             setArray(shuffle(8));
-            return;
         } else {
             setCompleted(true);
         }
