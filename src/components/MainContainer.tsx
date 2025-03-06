@@ -30,7 +30,7 @@ export const MainContainer = () => {
     }
 
     const shuffle = (grid: number) => {
-        if (grid < 2 || grid >8 || grid % 2 !== 0) {
+        if (grid < 2 || grid > 8 || grid % 2 !== 0) {
             console.error("Invalid grid size. Grid size must be either 2, 4 or 6. Using default value of 4.");
             setGridSize(4);
             grid = 4;
@@ -70,18 +70,10 @@ export const MainContainer = () => {
             return;
         }
 
-        if (round === 0) {
-            setGridSize(2);
-            setArray(shuffle(2));
-        } else if (round === 1) {
-            setGridSize(4);
-            setArray(shuffle(4));
-        } else if (round === 2) {
-            setGridSize(6);
-            setArray(shuffle(6));
-        } else if (round === 3) {
-            setGridSize(8);
-            setArray(shuffle(8));
+        if (round >= 0 && round <= 3) {
+            const grid = (round + 1) * 2;
+            setGridSize(grid);
+            setArray(shuffle(grid));
         } else {
             setCompleted(true);
         }

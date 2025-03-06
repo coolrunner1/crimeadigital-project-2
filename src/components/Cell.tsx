@@ -18,26 +18,28 @@ export const Cell = (
         if (bgColor !== "") {
             return;
         }
+
         if (selectedCards.length > 1) {
             return;
         }
+
         setBgColor(`${props.color}`);
         if (selectedCards.length === 1) {
             setTimeout(() => dispatch(setSelectedCards([])), 1000);
         }
-        dispatch(setSelectedCards([...selectedCards, props.id]));
-
+        dispatch(setSelectedCards([...selectedCards, props.color]));
     }
 
     useEffect(() => {
         if (selectedCards.length === 2
-            && Math.floor(props.id / 2) === Math.floor(selectedCards[0] / 2)
-            && Math.floor(props.id / 2) === Math.floor(selectedCards[1] / 2)
-            && bgColor !== "") {
+            && selectedCards[0] === selectedCards[1]
+            && props.color === selectedCards[0]
+            && bgColor !== ""
+        ) {
             setTimeout(() => {
                 setBgColor("#2b7fff");
                 dispatch(incrementNumberOfRemovedCards());
-            }, 1000);
+            }, 700);
         }
     }, [selectedCards]);
 
