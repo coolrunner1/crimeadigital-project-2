@@ -40,7 +40,7 @@ export const MainContainer = () => {
         const numberOfCells = grid * grid;
 
         for (let i = 0; i < numberOfCells; i+=2) {
-            const randomColor = "#"+Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
+            const randomColor = "#"+Math.floor(Math.random() * 0xFFF).toString(16).padStart(3, '0');
             colorArray.push({key: i, value: randomColor});
             colorArray.push({key: i+1, value: randomColor});
         }
