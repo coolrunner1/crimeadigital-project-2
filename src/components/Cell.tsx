@@ -3,11 +3,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../state/store.ts";
 import {incrementNumberOfRemovedCards, setSelectedCards} from "../slices/cardsSlice.ts";
 
-export const Cell = (
-    props: {
-        id: number;
-        color: string;
-    }) => {
+export type CellProps = {
+    id: number;
+    color: string;
+};
+
+export const Cell = (props: CellProps) => {
     const [bgColor, setBgColor] = useState<string>();
 
     const selectedCards = useSelector((state: RootState) => state.cards.selectedCards);
@@ -31,7 +32,8 @@ export const Cell = (
     }
 
     useEffect(() => {
-        if (selectedCards.length === 2
+        if (
+            selectedCards.length === 2
             && selectedCards[0] === selectedCards[1]
             && props.color === selectedCards[0]
             && bgColor !== ""

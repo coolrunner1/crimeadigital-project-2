@@ -1,11 +1,13 @@
 import {Button} from "./Button.tsx";
 import {MouseEventHandler} from "react";
 
+export type CellProps = {
+    onCasualClickHandle: MouseEventHandler<HTMLButtonElement>,
+    onChallengeClickHandle: MouseEventHandler<HTMLButtonElement>,
+};
+
 export const Overlay = (
-    props: {
-        onCasualClickHandle: MouseEventHandler<HTMLButtonElement>,
-        onChallengeClickHandle: MouseEventHandler<HTMLButtonElement>,
-    }
+    props: CellProps
 ) => {
     return (
         <>

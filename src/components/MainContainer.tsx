@@ -1,31 +1,32 @@
 import {Cell} from "./Cell.tsx";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../state/store.ts";
 import {setNumberOfRemovedCards} from "../slices/cardsSlice.ts";
 import {Overlay} from "./Overlay.tsx";
 import {WinScreen} from "./WinScreen.tsx";
+import {ColoredCell} from "../types/Cell.ts";
+import {CASUAL, CHALLENGE, NONE} from "../constants/modes.ts";
 
 export const MainContainer = () => {
-    const [array, setArray] = useState<{key: number, value: string}[]>([]);
+    const [array, setArray] = useState<ColoredCell[]>([]);
     const [round, setRound] = useState<number>(0);
-    const [render, setRender] = useState<boolean>(true);
-    const [mode, setMode] = useState<string>("");
+    const [allowRender, setAllowRender] = useState<boolean>(true);
+    const [mode, setMode] = useState(NONE);
     const [gridSize, setGridSize] = useState<number>(2);
     const [completed, setCompleted] = useState<boolean>(false);
     const [longestStreak, setLongestStreak] = useState<number>(0);
-
 
     const dispatch = useDispatch();
 
     const numberOfRemovedCards = useSelector((state: RootState) => state.cards.numberOfRemovedCards);
 
     const emulateBackground = () => {
-        const colorArray: {key: number, value: string}[] = [];
+        const colorArray: ColoredCell[] = [];
         for (let i = 0; i < 4; i++) {
-            colorArray.push({key: i, value: "f"});
+            colorArray.push({id: i, color: "f"});
         }
-        setRender(true);
+        setAllowRender(true);
         return colorArray;
     }
 
@@ -36,13 +37,13 @@ export const MainContainer = () => {
             grid = 4;
         }
 
-        const colorArray: {key: number, value: string}[] = [];
+        const colorArray: ColoredCell[] = [];
         const numberOfCells = grid * grid;
 
         for (let i = 0; i < numberOfCells; i+=2) {
             const randomColor = "#"+Math.floor(Math.random() * 0xFFF).toString(16).padStart(3, '0');
-            colorArray.push({key: i, value: randomColor});
-            colorArray.push({key: i+1, value: randomColor});
+            colorArray.push({id: i, color: randomColor});
+            colorArray.push({id: i+1, color: randomColor});
         }
 
         let currentIndex = colorArray.length;
@@ -51,20 +52,19 @@ export const MainContainer = () => {
             const randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex--;
 
-            [colorArray[currentIndex], colorArray[randomIndex]] = [
-                colorArray[randomIndex], colorArray[currentIndex]];
+            [colorArray[currentIndex], colorArray[randomIndex]] = [colorArray[randomIndex], colorArray[currentIndex]];
         }
         dispatch(setNumberOfRemovedCards(0));
-        setRound(round+1)
+        setRound(round+1);
         return colorArray;
     };
 
     const setDifficulty = () => {
-        if (mode === "") {
+        if (mode === NONE) {
             return;
         }
 
-        if (mode === "casual") {
+        if (mode === CASUAL) {
             setGridSize(4);
             setArray(shuffle(4));
             return;
@@ -79,18 +79,36 @@ export const MainContainer = () => {
         }
     };
 
-    const getLongestStreak = (): number => {
+    const getLongestStreak = useCallback((): number => {
         const greatestRound = localStorage.getItem("greatestRound");
-        if (greatestRound === null || parseInt(greatestRound) < round) {
-            localStorage.setItem("greatestRound", round.toString());
-            return round;
+        const previousRound = round-1;
+        if (greatestRound === null || parseInt(greatestRound) < previousRound) {
+            localStorage.setItem("greatestRound", previousRound.toString());
+            return previousRound;
         } else {
             return parseInt(greatestRound);
         }
-    };
+    }, [round]);
+
+    const getPlayingFieldGridSize = useCallback(() => {
+        switch (gridSize) {
+            case 2:
+                return 'grid-small';
+            case 4:
+                return 'grid-medium';
+            case 6:
+                return 'grid-large';
+            default:
+                return 'grid-extra-large';
+        }
+    }, [gridSize]);
+
+    const getPlayingFieldGap = useCallback(() => {
+        return gridSize >= 6 ? 'gap-2' : 'gap-6';
+    }, [gridSize]);
 
     useEffect(() => {
-        if (mode !== "casual") {
+        if (mode !== CASUAL) {
             return;
         }
 
@@ -99,10 +117,10 @@ export const MainContainer = () => {
 
     useEffect(() => {
         if (numberOfRemovedCards >= array.length) {
-            setRender(false);
+            setAllowRender(false);
             setTimeout(() => {
                 setDifficulty();
-                setRender(true);
+                setAllowRender(true);
             }, 1500)
         }
     }, [numberOfRemovedCards]);
@@ -112,7 +130,7 @@ export const MainContainer = () => {
     }, [mode]);
 
     useEffect(() => {
-        if (array.length === 0) {
+        if (!mode && array.length === 0) {
             setArray(emulateBackground);
         }
     }, []);
@@ -120,23 +138,24 @@ export const MainContainer = () => {
     return (
         <>
             {completed && <WinScreen/>}
-            {mode === "" &&
+            {mode === NONE &&
                 <Overlay
-                    onCasualClickHandle={() => setMode("casual")}
-                    onChallengeClickHandle={() => setMode("challenge")}
+                    onCasualClickHandle={() => setMode(CASUAL)}
+                    onChallengeClickHandle={() => setMode(CHALLENGE)}
                 />
             }
             <div className="h-screen w-screen [@media(max-height:400px)]:h-full bg-white dark:bg-gray-800 flex flex-col items-center justify-center">
                 <div className="m-auto w-full md:min-h-[400px] md:max-w-[600px] xl:max-w-[700px] h-full md:h-[70%] pt-5 sm:p-10 bg-blue-500 text-center gap-3 text-white md:rounded-2xl shadow-2xl">
                     <h1 className="text-2xl font-bold">Find a Couple</h1>
                     <div className="text-xl font-light">Round {round}</div>
-                    {mode === "casual" &&
-                        <div className="text-base font-light">Longest streak: {longestStreak} rounds</div>}
-                    {!render && <span className="text-xl font-light">You won!</span>}
-                    <div className={`${gridSize == 2 ? 'grid-small' : gridSize == 4 ? 'grid-medium' : gridSize == 6 ? 'grid-large' : 'grid-extra-large'}
-                            ${gridSize >= 6 ? 'gap-2' : 'gap-6'} h-[80%] lg:w-[70%] lg:mx-auto mt-2 mx-3 [@media(max-height:400px)]:h-[400px]`}
+                    {mode === CASUAL &&
+                        <div className="text-base font-light">Longest streak: {longestStreak} rounds</div>
+                    }
+                    {!allowRender && <span className="text-xl font-light">You won!</span>}
+                    <div
+                        className={`${getPlayingFieldGridSize()} ${getPlayingFieldGap()} h-[80%] lg:w-[70%] lg:mx-auto mt-2 mx-3 [@media(max-height:400px)]:h-[400px]`}
                     >
-                        {render && array.map((item, key) => (<Cell key={key} id={item.key} color={item.value} />))}
+                        {allowRender && array.map((item) => (<Cell key={item.id} id={item.id} color={item.color} />))}
                     </div>
                 </div>
             </div>
