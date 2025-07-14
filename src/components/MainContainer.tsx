@@ -27,7 +27,14 @@ export const MainContainer = () => {
             colorArray.push({id: i, color: "f"});
         }
         setAllowRender(true);
-        return colorArray;
+        setArray(colorArray);
+    }
+
+    const startGame = () => {
+        setDifficulty();
+        dispatch(setNumberOfRemovedCards(0));
+        setRound(round+1);
+        setAllowRender(true);
     }
 
     const shuffle = (grid: number) => {
@@ -54,8 +61,6 @@ export const MainContainer = () => {
 
             [colorArray[currentIndex], colorArray[randomIndex]] = [colorArray[randomIndex], colorArray[currentIndex]];
         }
-        dispatch(setNumberOfRemovedCards(0));
-        setRound(round+1);
         return colorArray;
     };
 
@@ -90,7 +95,7 @@ export const MainContainer = () => {
         }
     }, [round]);
 
-    const getPlayingFieldGridSize = useCallback(() => {
+    const getPlayingFieldGridSize = () => {
         switch (gridSize) {
             case 2:
                 return 'grid-small';
@@ -101,11 +106,11 @@ export const MainContainer = () => {
             default:
                 return 'grid-extra-large';
         }
-    }, [gridSize]);
+    };
 
-    const getPlayingFieldGap = useCallback(() => {
+    const getPlayingFieldGap = () => {
         return gridSize >= 6 ? 'gap-2' : 'gap-6';
-    }, [gridSize]);
+    };
 
     useEffect(() => {
         if (mode !== CASUAL) {
@@ -116,24 +121,24 @@ export const MainContainer = () => {
     }, [round]);
 
     useEffect(() => {
+        if (!mode) return;
+
         if (numberOfRemovedCards >= array.length) {
             setAllowRender(false);
             setTimeout(() => {
-                setDifficulty();
-                setAllowRender(true);
+                startGame();
             }, 1500)
         }
     }, [numberOfRemovedCards]);
 
     useEffect(() => {
-        setDifficulty();
-    }, [mode]);
-
-    useEffect(() => {
-        if (!mode && array.length === 0) {
-            setArray(emulateBackground);
+        if (!mode) {
+            emulateBackground();
+            return;
         }
-    }, []);
+
+        startGame();
+    }, [mode]);
 
     return (
         <>
